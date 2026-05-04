@@ -1,0 +1,258 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Sistema de encriptación y desencriptación de datos mediante funciones AWS Lambda usando JWT-JWE
+
+# Parámetros globales
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, prod]
+    Description: Entorno de despliegue
+  
+  KeyId:
+    Type: String
+    Description: ID de la clave RSA en Secrets Manager
+    Default: lambda-encryption-key
+  
+  LogLevel:
+    Type: String
+    Default: INFO
+    AllowedValues: [DEBUG, INFO, WARN, ERROR]
+    Description: Nivel de logging para las funciones Lambda
+
+# Variables globales
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: nodejs18.x
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        LOG_LEVEL: !Ref LogLevel
+        AWS_REGION: !Ref AWS::Region
+        KEY_ID: !Ref KeyId
+
+Resources:
+  # Función Lambda de Encriptación
+  EncryptionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-encryption-${Environment}"
+      Description: "Función Lambda para encriptar datos usando JWT-JWE con RSA-OAEP-256 y A256GCM"
+      CodeUri: dist/encryption/
+      Handler: index.handler
+      Environment:
+        Variables:
+          FUNCTION_TYPE: encryption
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${KeyId}-*"
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+      Events:
+        EncryptApi:
+          Type: Api
+          Properties:
+            Path: /encrypt
+            Method: post
+            RestApiId: !Ref ApiGateway
+      Tags:
+        Environment: !Ref Environment
+        Service: lambda-encryption-decryption
+        Function: encryption
+
+  # Función Lambda de Desencriptación
+  DecryptionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-decryption-${Environment}"
+      Description: "Función Lambda para desencriptar datos usando JWT-JWE con RSA-OAEP-256 y A256GCM"
+      CodeUri: dist/decryption/
+      Handler: index.handler
+      Environment:
+        Variables:
+          FUNCTION_TYPE: decryption
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${KeyId}-*"
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+      Events:
+        DecryptApi:
+          Type: Api
+          Properties:
+            Path: /decrypt
+            Method: post
+            RestApiId: !Ref ApiGateway
+      Tags:
+        Environment: !Ref Environment
+        Service: lambda-encryption-decryption
+        Function: decryption
+
+  # API Gateway
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub "${AWS::StackName}-api-${Environment}"
+      StageName: !Ref Environment
+      Description: "API Gateway para funciones de encriptación y desencriptación"
+      Cors:
+        AllowMethods: "'POST, OPTIONS'"
+        AllowHeaders: "'Content-Type, X-Amz-Date, Authorization, X-Api-Key, X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+      DefinitionBody:
+        openapi: 3.0.1
+        info:
+          title: Lambda Encryption Decryption API
+          version: 1.0.0
+        paths:
+          /encrypt:
+            post:
+              summary: Encriptar datos
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      description: Payload JSON a encriptar
+              responses:
+                '200':
+                  description: Encriptación exitosa
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          token:
+                            type: string
+                            description: Token JWE encriptado
+                '400':
+                  description: Error de validación
+                '413':
+                  description: Payload demasiado grande
+                '500':
+                  description: Error interno del servidor
+              x-amazon-apigateway-integration:
+                type: aws_proxy
+                httpMethod: POST
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EncryptionFunction.Arn}/invocations"
+          /decrypt:
+            post:
+              summary: Desencriptar datos
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        token:
+                          type: string
+                          description: Token JWE a desencriptar
+                      required:
+                        - token
+              responses:
+                '200':
+                  description: Desencriptación exitosa
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        description: Datos desencriptados
+                '400':
+                  description: Token inválido
+                '500':
+                  description: Error interno del servidor
+              x-amazon-apigateway-integration:
+                type: aws_proxy
+                httpMethod: POST
+                uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DecryptionFunction.Arn}/invocations"
+
+  # Permisos para API Gateway invocar las funciones Lambda
+  EncryptionFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref EncryptionFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "${ApiGateway}/*/POST/encrypt"
+
+  DecryptionFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref DecryptionFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "${ApiGateway}/*/POST/decrypt"
+
+  # CloudWatch Log Groups
+  EncryptionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${EncryptionFunction}"
+      RetentionInDays: 14
+
+  DecryptionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${DecryptionFunction}"
+      RetentionInDays: 14
+
+Outputs:
+  # API Gateway
+  ApiGatewayUrl:
+    Description: "URL base del API Gateway"
+    Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}"
+    Export:
+      Name: !Sub "${AWS::StackName}-api-url"
+
+  EncryptEndpoint:
+    Description: "Endpoint para encriptación"
+    Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/encrypt"
+
+  DecryptEndpoint:
+    Description: "Endpoint para desencriptación"
+    Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/decrypt"
+
+  # Funciones Lambda
+  EncryptionFunctionArn:
+    Description: "ARN de la función de encriptación"
+    Value: !GetAtt EncryptionFunction.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-encryption-function-arn"
+
+  DecryptionFunctionArn:
+    Description: "ARN de la función de desencriptación"
+    Value: !GetAtt DecryptionFunction.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-decryption-function-arn"
+
+  # Configuración
+  KeyId:
+    Description: "ID de la clave utilizada"
+    Value: !Ref KeyId
+
+  Environment:
+    Description: "Entorno de despliegue"
+    Value: !Ref Environment

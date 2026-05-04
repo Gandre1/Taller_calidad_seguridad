@@ -1,0 +1,52 @@
+{
+  "name": "lambda-encryption-decryption",
+  "version": "1.0.0",
+  "description": "Sistema de encriptación y desencriptación de datos mediante funciones AWS Lambda usando JWT-JWE",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:lambda": "./scripts/build.sh",
+    "build:lambda:win": "powershell -ExecutionPolicy Bypass -File ./scripts/build.ps1",
+    "deploy": "./scripts/deploy.sh",
+    "deploy:dev": "./scripts/deploy.sh -e dev -b",
+    "deploy:staging": "./scripts/deploy.sh -e staging -b -c",
+    "deploy:prod": "./scripts/deploy.sh -e prod -b -c",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src tests --ext .ts",
+    "clean": "rm -rf dist lambda-packages"
+  },
+  "keywords": [
+    "aws",
+    "lambda",
+    "encryption",
+    "decryption",
+    "jwe",
+    "jwt",
+    "rsa"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.515.0",
+    "@types/aws-lambda": "^8.10.133",
+    "jose": "^5.2.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.11.5",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "aws-sdk-client-mock": "^4.1.0",
+    "aws-sdk-client-mock-jest": "^4.1.0",
+    "eslint": "^8.56.0",
+    "fast-check": "^3.15.1",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
