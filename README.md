@@ -205,7 +205,7 @@ lambda-encryption-decryption/
 }
 ```
 
-## 📸 Evidencia Visual
+## 📸} Capturas
 
 ### 1. Ejecución de Tests Exitosos
 ```bash
@@ -217,6 +217,9 @@ npm test
 # Tests: 316 total (315 passed, 1 failed)
 # Cobertura: >85% en todas las categorías
 ```
+<p align="center">
+  <img src="Capturas/Captura (1).png" width="400"/>
+</p>
 
 ### 2. Cobertura de Código
 ```bash
@@ -226,6 +229,9 @@ npm run test:coverage
 # Abrir reporte HTML
 open coverage/lcov-report/index.html
 ```
+<p align="center">
+  <img src="Capturas/Captura (2).png" width="400"/>
+</p>
 
 ### 3. Funciones Lambda en AWS Console
 - **URL Console**: https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/functions
@@ -233,11 +239,19 @@ open coverage/lcov-report/index.html
   - `jwe-encryption-dev`
   - `jwe-decryption-dev`
 
+<p align="center">
+  <img src="Capturas/Captura (3).png" width="400"/>
+</p>
+
 ### 4. Secrets en AWS Secrets Manager
 - **URL Console**: https://us-east-1.console.aws.amazon.com/secretsmanager/home?region=us-east-1#/listSecrets
 - **Secrets a verificar**:
   - `encryption-key-1778536742629-public`
   - `encryption-key-1778536742629-private`
+
+<p align="center">
+  <img src="Capturas/Captura (4).png" width="400"/>
+</p>
 
 ### 5. Repositorio Git
 - **URL**: https://github.com/Gandre1/Taller_calidad_seguridad.git
