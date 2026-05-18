@@ -218,7 +218,7 @@ npm test
 # Cobertura: >85% en todas las categorías
 ```
 <p align="center">
-  <img src="Capturas/Captura (1).png" width="400"/>
+  <img src="capturas/Captura (1).png" width="400"/>
 </p>
 
 ### 2. Cobertura de Código
@@ -230,7 +230,7 @@ npm run test:coverage
 open coverage/lcov-report/index.html
 ```
 <p align="center">
-  <img src="Capturas/Captura (2).png" width="400"/>
+  <img src="capturas/Captura (2).png" width="400"/>
 </p>
 
 ### 3. Funciones Lambda en AWS Console
@@ -240,7 +240,7 @@ open coverage/lcov-report/index.html
   - `jwe-decryption-dev`
 
 <p align="center">
-  <img src="Capturas/Captura (3).png" width="400"/>
+  <img src="capturas/Captura (3).png" width="400"/>
 </p>
 
 ### 4. Secrets en AWS Secrets Manager
@@ -250,7 +250,7 @@ open coverage/lcov-report/index.html
   - `encryption-key-1778536742629-private`
 
 <p align="center">
-  <img src="Capturas/Captura (4).png" width="400"/>
+  <img src="capturas/Captura (4).png" width="400"/>
 </p>
 
 ### 5. Repositorio Git
