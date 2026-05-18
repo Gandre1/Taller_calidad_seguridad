@@ -205,7 +205,7 @@ lambda-encryption-decryption/
 }
 ```
 
-## 📸} Capturas
+## 📸 Capturas
 
 ### 1. Ejecución de Tests Exitosos
 ```bash
