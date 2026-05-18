@@ -234,8 +234,6 @@ open coverage/lcov-report/index.html
 </p>
 
 ### 3. Funciones Lambda en AWS Console
-- **URL Console**: https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/functions
-- **Funciones a verificar**:
   - `jwe-encryption-dev`
   - `jwe-decryption-dev`
 
@@ -244,8 +242,6 @@ open coverage/lcov-report/index.html
 </p>
 
 ### 4. Secrets en AWS Secrets Manager
-- **URL Console**: https://us-east-1.console.aws.amazon.com/secretsmanager/home?region=us-east-1#/listSecrets
-- **Secrets a verificar**:
   - `encryption-key-1778536742629-public`
   - `encryption-key-1778536742629-private`
 
