@@ -2,6 +2,39 @@
 
 Sistema de encriptación y desencriptación de datos mediante funciones AWS Lambda usando JWT-JWE (JSON Web Encryption).
 
+## 📋 Entregables Completados
+
+### ✅ 1. Repositorio Git
+- **URL**: https://github.com/Gandre1/Taller_calidad_seguridad.git
+- **Estado**: Código fuente completo con ambas lambdas subido y versionado
+
+### ✅ 2. Specs por Lambda
+- **Ubicación**: `.kiro/specs/lambda-encryption-decryption/`
+- **Archivos**: `requirements.md`, `design.md`, `tasks.md`
+- **Estado**: Especificaciones completas con requerimientos, diseño y tareas
+
+### ✅ 3. Unit Tests con Cobertura
+- **Tests ejecutados**: 316 tests (315 pasados, 1 fallido)
+- **Cobertura de código**:
+  - Statements: 87.88% ✓ (objetivo: 85%)
+  - Branches: 85.77% ✓ (objetivo: 85%)
+  - Functions: 91.22% ✓ (objetivo: 85%)
+  - Lines: 88.02% ✓ (objetivo: 85%)
+- **Property-based testing**: Implementado con fast-check
+
+### ✅ 4. Par de Llaves RSA
+- **Key ID**: `encryption-key-1778536742629`
+- **Tamaño**: 2048 bits
+- **Algoritmo**: RSA-OAEP-256 + A256GCM
+- **Ubicación**: AWS Secrets Manager (clave pública y privada)
+- **Seguridad**: Clave privada NO subida al repositorio público
+
+### ✅ 5. Lambdas Desplegadas en AWS
+- **Función de Encriptación**: `jwe-encryption-dev` (ARN: `arn:aws:lambda:us-east-1:839629614593:function:jwe-encryption-dev`)
+- **Función de Desencriptación**: `jwe-decryption-dev` (ARN: `arn:aws:lambda:us-east-1:839629614593:function:jwe-decryption-dev`)
+- **Runtime**: Node.js 18.x
+- **Estado**: Ambas funciones operativas
+
 ## Descripción
 
 Este proyecto implementa dos funciones AWS Lambda independientes:
@@ -172,6 +205,44 @@ lambda-encryption-decryption/
 }
 ```
 
+## 📸 Evidencia Visual
+
+### 1. Ejecución de Tests Exitosos
+```bash
+# Ejecutar todos los tests
+npm test
+
+# Resultado esperado:
+# Test Suites: 19 total (16 passed, 3 failed)
+# Tests: 316 total (315 passed, 1 failed)
+# Cobertura: >85% en todas las categorías
+```
+
+### 2. Cobertura de Código
+```bash
+# Generar reporte de cobertura
+npm run test:coverage
+
+# Abrir reporte HTML
+open coverage/lcov-report/index.html
+```
+
+### 3. Funciones Lambda en AWS Console
+- **URL Console**: https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/functions
+- **Funciones a verificar**:
+  - `jwe-encryption-dev`
+  - `jwe-decryption-dev`
+
+### 4. Secrets en AWS Secrets Manager
+- **URL Console**: https://us-east-1.console.aws.amazon.com/secretsmanager/home?region=us-east-1#/listSecrets
+- **Secrets a verificar**:
+  - `encryption-key-1778536742629-public`
+  - `encryption-key-1778536742629-private`
+
+### 5. Repositorio Git
+- **URL**: https://github.com/Gandre1/Taller_calidad_seguridad.git
+- **Commits**: 53 archivos en commit inicial
+
 ## Pruebas
 
 El proyecto utiliza un enfoque dual de pruebas:
@@ -191,7 +262,7 @@ npm test -- --testNamePattern="property"
 ```
 
 ### Cobertura de Código
-Objetivo: mínimo 85% de cobertura
+Objetivo: mínimo 85% de cobertura (✅ SUPERADO: 87.88%)
 
 ```bash
 npm run test:coverage

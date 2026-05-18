@@ -1,0 +1,83 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Funciones Lambda de encriptación/desencriptación JWE
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues: [dev, staging, prod]
+  
+  KeyId:
+    Type: String
+    Description: ID de la clave RSA en Secrets Manager
+    Default: encryption-key-1778536742629
+  
+  LogLevel:
+    Type: String
+    Default: INFO
+    AllowedValues: [DEBUG, INFO, WARN, ERROR]
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: nodejs18.x
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        LOG_LEVEL: !Ref LogLevel
+        KEY_ID: !Ref KeyId
+
+Resources:
+  EncryptionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "jwe-encryption-${Environment}"
+      Description: "Función Lambda para encriptar datos usando JWT-JWE"
+      CodeUri: dist/encryption/
+      Handler: index.handler
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${KeyId}-*"
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: "*"
+
+  DecryptionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "jwe-decryption-${Environment}"
+      Description: "Función Lambda para desencriptar datos usando JWT-JWE"
+      CodeUri: dist/decryption/
+      Handler: index.handler
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${KeyId}-*"
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: "*"
+
+Outputs:
+  EncryptionFunctionArn:
+    Description: "ARN de la función de encriptación"
+    Value: !GetAtt EncryptionFunction.Arn
+
+  DecryptionFunctionArn:
+    Description: "ARN de la función de desencriptación"
+    Value: !GetAtt DecryptionFunction.Arn

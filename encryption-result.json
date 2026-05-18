@@ -1,0 +1,1 @@
+{"statusCode":500,"headers":{"Content-Type":"application/json"},"body":"{\"error\":\"Failed to retrieve key from Secrets Manager\",\"code\":\"KEY_RETRIEVAL_ERROR\",\"requestId\":\"req-1779131148558\"}"}

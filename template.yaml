@@ -33,7 +33,6 @@ Globals:
     Environment:
       Variables:
         LOG_LEVEL: !Ref LogLevel
-        AWS_REGION: !Ref AWS::Region
         KEY_ID: !Ref KeyId
 
 Resources:

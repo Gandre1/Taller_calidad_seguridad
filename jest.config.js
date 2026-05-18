@@ -6,6 +6,9 @@ module.exports = {
   // Entorno de ejecución
   testEnvironment: 'node',
   
+  // Configurar variables de entorno para pruebas
+  setupFiles: ['<rootDir>/tests/setup.ts'],
+  
   // Directorios de pruebas
   roots: ['<rootDir>/tests', '<rootDir>/src'],
   
