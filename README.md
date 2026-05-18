@@ -253,10 +253,6 @@ open coverage/lcov-report/index.html
   <img src="capturas/Captura (4).png" />
 </p>
 
-### 5. Repositorio Git
-- **URL**: https://github.com/Gandre1/Taller_calidad_seguridad.git
-- **Commits**: 53 archivos en commit inicial
-
 ## Pruebas
 
 El proyecto utiliza un enfoque dual de pruebas:
