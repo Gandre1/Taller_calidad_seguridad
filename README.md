@@ -205,55 +205,168 @@ lambda-encryption-decryption/
 }
 ```
 
-## 📸 Capturas
+## 📸 Evidencias Visuales
 
-### 1. Ejecución de Tests Exitosos
+### Tests y Cobertura
+
+#### 1. Ejecución de Tests Unitarios
+
+Resultado de la ejecución de 316 tests con cobertura superior al 85%:
+
+<p align="center">
+<img src="capturas/Captura (1).png" alt="Ejecución de Tests" />
+</p>
+
 ```bash
 # Ejecutar todos los tests
 npm test
-
-# Resultado esperado:
-# Test Suites: 19 total (16 passed, 3 failed)
-# Tests: 316 total (315 passed, 1 failed)
-# Cobertura: >85% en todas las categorías
 ```
+
+#### 2. Reporte de Cobertura de Código
+
+Cobertura detallada por módulo (Statements: 87.88%, Branches: 85.77%, Functions: 91.22%, Lines: 88.02%):
+
 <p align="center">
-  <img src="capturas/Captura (1).png" />
+<img src="capturas/Captura (2).png" alt="Cobertura de Código" />
 </p>
 
-### 2. Cobertura de Código
 ```bash
 # Generar reporte de cobertura
 npm run test:coverage
-
-# Abrir reporte HTML
-open coverage/lcov-report/index.html
 ```
-<p align="center">
-  <img src="capturas/Captura (2).png" />
-</p>
 
-### 3. Funciones Lambda en AWS Console
-  - `jwe-encryption-dev`
-  - `jwe-decryption-dev`
+### Infraestructura AWS
 
-<p align="center">
-  <img src="capturas/Captura (3).png" />
-</p>
-<p align="center">
-  <img src="capturas/Captura (4).png" />
-</p>
+#### 3. Funciones Lambda Desplegadas
 
-### 4. Secrets en AWS Secrets Manager
-  - `encryption-key-1778536742629-public`
-  - `encryption-key-1778536742629-private`
+Funciones `jwe-encryption-dev` y `jwe-decryption-dev` operativas en AWS Lambda:
 
 <p align="center">
-  <img src="capturas/Captura (5).png" />
+<img src="capturas/Captura (3).png" alt="Lambdas" />
 </p>
+
+
+#### 4. Claves RSA en AWS Secrets Manager
+
+Par de claves RSA almacenadas de forma segura en AWS Secrets Manager:
+
 <p align="center">
-  <img src="capturas/Captura (6).png" />
+<img src="capturas/Captura (4).png" alt="Secrets" />
 </p>
+
+
+## 🚀 Demostración de Funcionalidad
+
+### Encriptación y Desencriptación mediante AWS CLI
+
+#### Encriptación - Terminal (AWS CLI)
+
+Comando para encriptar datos sensibles:
+
+```bash
+aws lambda invoke \
+  --function-name jwe-encryption-dev \
+  --payload fileb://encrypt-payload.json \
+  encryption-result.json && cat encryption-result.json
+```
+
+**Payload de entrada** (`encrypt-payload.json`):
+```json
+{
+  "body": "{\"userId\":\"12345\",\"email\":\"test@example.com\",\"data\":\"sensitive information\"}"
+}
+```
+
+**Captura de ejecución:**
+
+<p align="center">
+<img src="capturas/Captura (5).png" alt="Encriptación via AWS CLI" />
+</p>
+
+---
+
+#### Desencriptación - Terminal (AWS CLI)
+
+Comando para desencriptar el token JWE generado:
+
+```bash
+aws lambda invoke \
+  --function-name jwe-decryption-dev \
+  --payload fileb://decrypt-payload.json \
+  decryption-result.json && cat decryption-result.json
+```
+
+**Payload de entrada** (`decrypt-payload.json`):
+```json
+{
+  "body": "{\"token\":\"eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIn0...\"}"
+}
+```
+
+**Captura de ejecución:**
+
+<p align="center">
+<img src="capturas/Captura (6).png" alt="Desencriptación via AWS CLI" />
+</p>
+
+---
+
+### Encriptación y Desencriptación mediante AWS Console
+
+#### Encriptación - AWS Console
+
+Prueba de la función de encriptación desde la consola de AWS Lambda:
+
+**Evento de prueba:**
+```json
+{
+  "body": "{\"userId\":\"12345\",\"email\":\"test@example.com\",\"data\":\"sensitive information\"}"
+}
+```
+
+**Captura de ejecución:**
+
+<p align="center">
+<img src="capturas/Captura (7).png" alt="Encriptación via AWS Console" />
+</p>
+
+<p align="center">
+<img src="capturas/Captura (8).png" alt="Encriptación via AWS Console" />
+</p>
+
+---
+
+#### Desencriptación - AWS Console
+
+Prueba de la función de desencriptación desde la consola de AWS Lambda:
+
+**Evento de prueba:**
+```json
+{
+  "body": "{\"token\":\"eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIn0...\"}"
+}
+```
+
+**Captura de ejecución:**
+
+<p align="center">
+<img src="capturas/Captura (9).png" alt="Desencriptación via AWS Console" />
+</p>
+
+<p align="center">
+<img src="capturas/Captura (10).png" alt="Desencriptación via AWS Console" />
+</p>
+
+---
+
+### ✅ Verificación del Flujo Completo
+
+El flujo completo demuestra:
+
+1. ✅ **Encriptación exitosa**: Datos sensibles convertidos en token JWE
+2. ✅ **Token JWE válido**: Formato conforme con RFC 7516 (5 partes separadas por puntos)
+3. ✅ **Desencriptación exitosa**: Token JWE convertido de vuelta a datos originales
+4. ✅ **Integridad de datos**: Los datos desencriptados coinciden exactamente con los originales
 
 ## Pruebas
 
