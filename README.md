@@ -240,13 +240,19 @@ open coverage/lcov-report/index.html
 <p align="center">
   <img src="capturas/Captura (3).png" />
 </p>
+<p align="center">
+  <img src="capturas/Captura (4).png" />
+</p>
 
 ### 4. Secrets en AWS Secrets Manager
   - `encryption-key-1778536742629-public`
   - `encryption-key-1778536742629-private`
 
 <p align="center">
-  <img src="capturas/Captura (4).png" />
+  <img src="capturas/Captura (5).png" />
+</p>
+<p align="center">
+  <img src="capturas/Captura (6).png" />
 </p>
 
 ## Pruebas
