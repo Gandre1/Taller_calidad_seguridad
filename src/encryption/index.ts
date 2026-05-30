@@ -74,7 +74,7 @@ async function initialize(): Promise<void> {
 
     // Recuperar clave pública con reintentos
     // Requisito 2.1, 2.2: Recuperar clave pública con reintentos
-    publicKey = await keyManager.getPublicKey(keyId);
+    publicKey = await keyManager.getPublicKey(`${keyId}-public`);
 
     logger.info('Encryption Lambda initialized successfully', {
       requestId: 'init',

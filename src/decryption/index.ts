@@ -74,7 +74,7 @@ async function initialize(): Promise<void> {
 
     // Recuperar clave privada con reintentos
     // Requisito 4.1, 4.2: Recuperar clave privada con reintentos
-    privateKey = await keyManager.getPrivateKey(keyId);
+    privateKey = await keyManager.getPrivateKey(`${keyId}-private`);
 
     logger.info('Decryption Lambda initialized successfully', {
       requestId: 'init',
